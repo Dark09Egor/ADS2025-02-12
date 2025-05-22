@@ -62,15 +62,42 @@ public class A_Huffman {
         Scanner scanner = new Scanner(inputStream);
         String s = scanner.next();
 
+
         //все комментарии от тестового решения были оставлены т.к. это задание A.
         //если они вам мешают их можно удалить
 
         Map<Character, Integer> count = new HashMap<>();
+        for (char i : s.toCharArray())
+        {
+            if (count.containsKey(i)){
+                int temp = count.get(i);
+                count.put(i, temp+1);
+            }
+            else {
+                count.put(i, 1);
+            }
+
+        }
         //1. переберем все символы по очереди и рассчитаем их частоту в Map count
         //для каждого символа добавим 1 если его в карте еще нет или инкремент если есть.
 
         //2. перенесем все символы в приоритетную очередь в виде листьев
         PriorityQueue<Node> priorityQueue = new PriorityQueue<>();
+
+        count.forEach((myKey, myValue) -> {
+            LeafNode myNode = new LeafNode(myValue, myKey);
+            priorityQueue.add(myNode);
+        });
+
+        while (priorityQueue.size() > 1)
+        {
+            Node leaf1, leaf2;
+            leaf1 = priorityQueue.poll();
+            leaf2 = priorityQueue.poll();
+            InternalNode parentNode = new InternalNode(leaf1, leaf2);
+            priorityQueue.add(parentNode);
+        }
+        InternalNode cod = (InternalNode) priorityQueue.poll();
 
         //3. вынимая по два узла из очереди (для сборки родителя)
         //и возвращая этого родителя обратно в очередь
@@ -79,8 +106,11 @@ public class A_Huffman {
 
         //4. последний из родителей будет корнем этого дерева
         //это будет последний и единственный элемент оставшийся в очереди priorityQueue.
+        String str = "";
+        cod.fillCodes(str);
         StringBuilder sb = new StringBuilder();
         //.....
+        for (char simbol: s.toCharArray()) {   sb.append(codes.get(simbol));   }
 
         return sb.toString();
         //01001100100111
